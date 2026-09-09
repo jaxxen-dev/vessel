@@ -21,6 +21,7 @@ with pkgs; [
   nh
   nix-tree
   nixfmt
+  opentofu
   python3
   ripgrep
   skim
