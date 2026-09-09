@@ -64,6 +64,7 @@ _:
         markdown_oxide.enable = true;
         nixd.enable = true;
         pyright.enable = true;
+        tofu_ls.enable = true;
         yamlls.enable = true;
         rust_analyzer = {
           enable = true;
