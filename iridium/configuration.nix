@@ -340,8 +340,8 @@
           "wireshark"
         ];
         openssh.authorizedKeys.keys = [
-          "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPWrjxRDOFFjLrE478wvGte8DfKPExV21D3FD0fyaC5p jaxxen@vessel"
-          "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIO8yGeQyVrqgNsn5wEciSjZMh/JkDE/h/G99ugxZT05R jaxxen@yttrium"
+          "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAINf5O1PF7EOI+5OZ0WroFKzgJnWHv8RDwh2R3+HqPs6YAAAACnNzaDpqYXh4ZW4= jaxxen@yubikey"
+          "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIMV+xxHgt/f+M4kJn3HZPBe2kHSqbH0ym8mZ6V+4GyP9AAAACnNzaDpqYXh4ZW4= jaxxen@yubikey-backup"
         ];
         hashedPasswordFile = config.sops.secrets.jaxxen_hashed_password.path;
       };
