@@ -417,6 +417,14 @@ in {
       enable = true;
       enableZshIntegration = true;
     };
+    ssh = {
+      enable = true;
+      enableDefaultConfig = false;
+      settings."*".IdentityFile = [
+        "${config.home.homeDirectory}/.ssh/id_ed25519_sk"
+        "${config.home.homeDirectory}/.ssh/id_ed25519_sk_backup"
+      ];
+    };
     wezterm = {
       enable = true;
       enableZshIntegration = true;
