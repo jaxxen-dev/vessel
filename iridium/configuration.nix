@@ -297,7 +297,11 @@
           "Pictures"
           "Projects"
         ];
-        files = [ ".ssh/known_hosts" ];
+        files = [
+          ".ssh/known_hosts"
+          ".ssh/id_ed25519_sk"
+          ".ssh/id_ed25519_sk_backup"
+        ];
       };
     };
   };
