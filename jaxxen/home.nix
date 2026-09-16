@@ -287,7 +287,7 @@ in {
           "privacy.resistFingerprinting" = false;
           "privacy.fingerprintingProtection" = true;
           "privacy.fingerprintingProtection.overrides" = "+AllTargets,-CSSPrefersColorScheme";
-          "browser.toolbars.bookmarks.visibility" = "newtab";
+          "browser.toolbars.bookmarks.visibility" = "never";
           "widget.use-xdg-desktop-portal.file-picker" = 1;
           "extensions.autoDisableScopes" = 0;
           "widget.use-xdg-desktop-portal.settings" = 1;
@@ -298,23 +298,6 @@ in {
           df-youtube
           theater-mode-for-youtube
         ];
-        bookmarks = {
-          force = true;
-          settings = [{
-            name = "toolbar";
-            toolbar = true;
-            bookmarks = let
-              bookmark = domain: {
-                name = "";
-                url = "https://${domain}";
-              };
-            in [
-              (bookmark "mynixos.com")
-              (bookmark "nixos.org")
-              (bookmark "account.proton.me/switch")
-            ];
-          }];
-        };
       };
       policies.ExtensionSettings = {
         "keepassxc-browser@keepassxc.org".private_browsing = true;
