@@ -36,6 +36,7 @@ in {
     file = {
       ".profile".text = ". ~/.local/state/nix/profile/etc/profile.d/hm-session-vars.sh";
       ".nix-profile".source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.local/state/nix/profile";
+      ".config/git/allowed_signers".text = ''${config.programs.git.settings.user.email} namespaces="git" ${lib.fileContents ./id_ed25519_sk.pub}'';
     };
     sessionVariables = {
       NIXOS_OZONE_WL = "1";
@@ -231,6 +232,9 @@ in {
           name = "Jaxxen";
           email = "git@jaxxen.dev";
         };
+        gpg.format = "ssh";
+        gpg.ssh.allowedSignersFile = "${config.home.homeDirectory}/.config/git/allowed_signers";
+        tag.gpgsign = true;
       };
       ignores = [
         "secrets/**/*.yaml.dec"
@@ -239,6 +243,10 @@ in {
         ".direnv"
         "**/.DS_Store"
       ];
+      signing = {
+        key = "${config.home.homeDirectory}/.ssh/id_ed25519_sk";
+        signByDefault = true;
+      };
     };
     gitui.enable = true;
     hyprlock.enable = true;
