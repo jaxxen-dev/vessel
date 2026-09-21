@@ -24,6 +24,7 @@ with pkgs; [
   opentofu
   python3
   ripgrep
+  sd
   skim
   smem
   sops
