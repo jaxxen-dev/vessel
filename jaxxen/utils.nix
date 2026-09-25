@@ -4,13 +4,16 @@
 }:
 with pkgs; [
   age
+  amass
   bat
   bottom
   curl
   deadnix
   delta
+  dig
   eza
   fd
+  ffuf
   gh
   git
   gitui
@@ -18,18 +21,24 @@ with pkgs; [
   keepassxc
   killall
   libqalculate
+  netcat-gnu
   nh
   nix-tree
   nixfmt
+  nmap
+  nuclei
   opentofu
   python3
   ripgrep
+  rustscan
   sd
   skim
   smem
   sops
   ssh-to-age
   statix
+  subfinder
+  tcpdump
   tree
   uutils-coreutils-noprefix
   yazi
