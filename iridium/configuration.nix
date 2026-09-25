@@ -227,17 +227,7 @@
     };
     resolved = {
       enable = true;
-      settings.Resolve = {
-        DNS = [
-          "1.1.1.1"
-          "1.0.0.1"
-          "9.9.9.9"
-          "149.112.112.112"
-        ];
-        DNSSEC = true;
-        DNSOverTLS = "yes";
-        Domains = [ "~." ];
-      };
+      settings.Resolve.DNSSEC = true;
     };
     sunshine = {
       enable = false;

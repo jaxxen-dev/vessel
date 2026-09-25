@@ -31,7 +31,7 @@ It is **declarative and reproducible** — the whole machine is rebuilt from thi
 - **Impermanence:** Rollback service wipes `@` and `@home` on every boot; declared portions of state persist at `/persist`
 - **Rehomify:** Standalone home-manager configuration(s) reapplied on boot via [Rehomify](https://github.com/Ryokune/rehomify)
 - **Secrets:** sops-nix/age, age key derived from SSH host key at `/var/lib/ssh/ssh_host_ed25519_key`
-- **Network:** NetworkManager + DHCP, Tailscale (tag:iridium), Quad9 DNS over TLS with DNSSEC
+- **Network:** NetworkManager + DHCP, Tailscale (tag:iridium)
 
 ### Installation
 
