@@ -373,10 +373,10 @@ in {
     ripgrep.enable = true;
     rofi = {
       enable = true;
-      modes = [ "drun" ];
-      terminal = terminal.command;
-      font = "${font.mono.family} ${toString font.mono.size}";
-      extraConfig = {
+      settings = {
+        modes = [ "drun" ];
+        terminal = terminal.command;
+        font = "${font.mono.family} ${toString font.mono.size}";
         drun-display-format = "{name}";
         display-drun = "drun: ";
       };
