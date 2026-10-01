@@ -248,7 +248,6 @@ in {
         signByDefault = true;
       };
     };
-    gitui.enable = true;
     hyprlock.enable = true;
     hyprshot = {
       enable = true;

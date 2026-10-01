@@ -16,7 +16,6 @@ with pkgs; [
   ffuf
   gh
   git
-  gitui
   jq
   keepassxc
   killall
