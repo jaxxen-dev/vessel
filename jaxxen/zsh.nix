@@ -12,6 +12,7 @@ let
 
   lofiCases = [
     { name = "summer"; label = "lofi summer"; url = "https://www.youtube.com/watch?v=0muHFBSiybw"; }
+    { name = "fall";   label = "lofi fall";   url = "https://www.youtube.com/watch?v=8gJ716dhStg"; }
     { name = "sleep";  label = "lofi sleep";  url = "https://www.youtube.com/watch?v=VAlMDl00mYY"; }
     { name = "jazz";   label = "lofi jazz";   url = "https://www.youtube.com/watch?v=A8jDx9TLMQc"; }
   ];
