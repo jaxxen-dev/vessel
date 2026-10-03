@@ -151,6 +151,7 @@
         login.u2fAuth = true;
         sudo.u2fAuth = true;
         ly.u2fAuth = true;
+        waylock.u2fAuth = true;
       };
       u2f = {
         enable = true;
@@ -191,7 +192,7 @@
       authorized_passkeys = {
         sopsFile = ../secrets/iridium/authorized_passkeys.yaml;
         key = "authorized_passkeys";
-        neededForUsers = true;
+        owner = "jaxxen";
       };
     };
   };

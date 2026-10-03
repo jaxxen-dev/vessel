@@ -71,6 +71,7 @@ in {
       quickemu
       trash-cli
       ungoogled-chromium
+      waylock
       wiremix
       wl-clipboard-rs
       xdg-desktop-portal-termfilechooser
@@ -248,7 +249,6 @@ in {
         signByDefault = true;
       };
     };
-    hyprlock.enable = true;
     hyprshot = {
       enable = true;
       saveLocation = "${config.home.homeDirectory}/Pictures/Screenshots";
@@ -764,7 +764,6 @@ in {
       };
       permission = [
         { _args = [ "${pkgs.grim}/bin/grim" "screencopy" "allow" ]; }
-        { _args = [ "${pkgs.hyprlock}/bin/hyprlock" "screencopy" "allow" ]; }
         # { _args = [ "${pkgs.sunshine.override { cudaSupport = true; }}/bin/sunshine" "screencopy" "allow" ]; }
       ];
       config = {
@@ -903,7 +902,7 @@ in {
         (kb "${mod} + F" (mkLua ''hl.dsp.window.float({ action = "toggle" })''))
         (kb "${mod} + Z" (mkLua ''hl.dsp.layout("togglesplit")''))
         (kb "${mod} + X" (mkLua "hl.dsp.window.swap({ prev = true })"))
-        (kb "${mod} + backslash" (exec "hyprlock"))
+        (kb "${mod} + backslash" (exec "waylock -fork-on-lock -init-color 0x000000 -input-color 0x162431 -fail-color 0x170001"))
         (kb "${mod} + CTRL + escape" (mkLua "hl.dsp.exit()"))
         (kb "print" (exec "hyprshot -m output -m active"))
         (kb "ALT + print" (exec "hyprshot -m window -m active"))
