@@ -4,6 +4,7 @@
 }:
 with pkgs; [
   age
+  age-plugin-yubikey
   amass
   bat
   bottom
