@@ -302,6 +302,7 @@ in {
         extensions.packages = with addons; [
           ublock-origin
           keepassxc-browser
+          violentmonkey
           df-youtube
           theater-mode-for-youtube
         ];
