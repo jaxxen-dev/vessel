@@ -4,7 +4,7 @@
 }:
 with pkgs; [
   age
-  age-plugin-yubikey
+  age-plugin-fido2-hmac
   amass
   bat
   bottom
@@ -21,6 +21,7 @@ with pkgs; [
   jq
   keepassxc
   killall
+  libfido2
   libqalculate
   netcat-gnu
   nh
