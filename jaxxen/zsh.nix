@@ -8,7 +8,9 @@ let
 
   channel = "nixos-26.05";
 
-  lofiDefault = { label = "lofi";        url = "https://www.youtube.com/watch?v=rFZHOHl-L8A"; };
+  defaultF = "800";
+
+  lofiDefault = { label = "lofi"; url = "https://www.youtube.com/watch?v=rFZHOHl-L8A"; };
 
   lofiCases = [
     { name = "summer"; label = "lofi summer"; url = "https://www.youtube.com/watch?v=0muHFBSiybw"; }
@@ -24,7 +26,8 @@ let
 
   nixShell = ''nix shell "github:NixOS/nixpkgs/${channel}#streamlink" "github:NixOS/nixpkgs/${channel}#mpv"'';
 
-  streamlinkCmd = ''--command bash -c 'streamlink --quiet --player "$(which mpv)" --player-args "--no-video --really-quiet" "$1" best' -- '';
+  # filter passed in as $2 so it can vary at runtime
+  streamlinkCmd = ''--command bash -c 'streamlink --quiet --player "$(which mpv)" --player-args "--no-video --really-quiet $2" "$1" best' -- '';
 
   displayLabel = ''
     local cols=$(tput cols)
@@ -37,6 +40,35 @@ let
     printf '\e[1;3m%s\e[0m\n' "$label"
   '';
 
+  # Parses flags in any order, e.g.  lofi jazz -em   lofi -m 400 sleep
+  # Sets: $positional and $af
+  parseFlags = ''
+    local positional="" af="" use_echo=0 muffle=0 f=${defaultF} flags i c
+    while [[ $# -gt 0 ]]; do
+      case "$1" in
+        -*)
+          flags="''${1#-}"
+          for (( i=0; i<''${#flags}; i++ )); do
+            c="''${flags:$i:1}"
+            case "$c" in
+              e) use_echo=1 ;;
+              m) muffle=1
+                 if [[ "''${2:-}" =~ ^[0-9]+$ ]]; then f="$2"; shift; fi ;;
+            esac
+          done ;;
+        *) positional="$1" ;;
+      esac
+      shift
+    done
+
+    local filters=()
+    if (( muffle ));  then filters+=("lowpass=f=$f"); fi
+    if (( use_echo )); then filters+=("aecho=0.8:0.7:40:0.3"); fi
+    if (( ''${#filters[@]} )); then
+      af="--af=$(IFS=,; echo "''${filters[*]}")"
+    fi
+  '';
+
   mkFunc = name: body: ''
     ${name}() {
       ${body}
@@ -45,20 +77,22 @@ let
 
   lofiFunc = mkFunc "lofi" ''
     local label url
+    ${parseFlags}
 
-    case "''${1:-}" in
+    case "$positional" in
       ${cases}
       *) label='${lofiDefault.label}'; url='${lofiDefault.url}' ;;
     esac
 
     ${displayLabel}
-    ${nixShell} ${streamlinkCmd}"$url" 2>/dev/null
+    ${nixShell} ${streamlinkCmd}"$url" "$af" 2>/dev/null
   '';
 
   oceanFunc = mkFunc "ocean" ''
     local label="ocean"
+    ${parseFlags}
     ${displayLabel}
-    ${nixShell} ${streamlinkCmd}"https://www.youtube.com/watch?v=vPhg6sc1Mk4" 2>/dev/null
+    ${nixShell} ${streamlinkCmd}"https://www.youtube.com/watch?v=vPhg6sc1Mk4" "$af" 2>/dev/null
   '';
 
   # end audio
@@ -101,8 +135,8 @@ let
       typeset -g POWERLEVEL9K_VIRTUALENV_SHOW_PYTHON_VERSION=false
       typeset -g POWERLEVEL9K_VIRTUALENV_{LEFT,RIGHT}_DELIMITER=
       typeset -g POWERLEVEL9K_DIR_FOREGROUND=$blue
-      typeset -g POWERLEVEL9K_CONTEXT_ROOT_TEMPLATE=\"%F{$white}%n%f%F{$grey}@%m%f\"
-      typeset -g POWERLEVEL9K_CONTEXT_TEMPLATE=\"%F{$grey}%n@%m%f\"
+      typeset -g POWERLEVEL9K_CONTEXT_ROOT_TEMPLATE="%F{$white}%n%f%F{$grey}@%m%f"
+      typeset -g POWERLEVEL9K_CONTEXT_TEMPLATE="%F{$grey}%n@%m%f"
       typeset -g POWERLEVEL9K_CONTEXT_{DEFAULT,SUDO}_CONTENT_EXPANSION=
       typeset -g POWERLEVEL9K_COMMAND_EXECUTION_TIME_THRESHOLD=5
       typeset -g POWERLEVEL9K_COMMAND_EXECUTION_TIME_PRECISION=0
