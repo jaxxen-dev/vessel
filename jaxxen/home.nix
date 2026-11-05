@@ -1,3 +1,7 @@
+/* SPDX-License-Identifier: MIT
+ * Copyright (C) 2026 Jaxxen
+ */
+
 {
   config,
   lib,
@@ -6,6 +10,7 @@
   ...
 }:
 let
+  home = config.home.homeDirectory;
   zsh = import ./zsh.nix {
     inherit pkgs;
   };
@@ -31,17 +36,14 @@ let
 in {
   home = {
     stateVersion = "26.05";
-    username = "jaxxen";
-    homeDirectory = "/home/jaxxen";
     file = {
-      ".profile".text = ". ~/.local/state/nix/profile/etc/profile.d/hm-session-vars.sh";
-      ".nix-profile".source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.local/state/nix/profile";
+      ".profile".text = ". ${config.home.profileDirectory}/etc/profile.d/hm-session-vars.sh";
       ".config/git/allowed_signers".text = ''${config.programs.git.settings.user.email} namespaces="git" ${lib.fileContents ./id_ed25519_sk.pub}'';
     };
     sessionVariables = {
       NIXOS_OZONE_WL = "1";
       PIPEWIRE_LATENCY = "96/48000";
-      SOPS_AGE_KEY_FILE = "${config.home.homeDirectory}/.local/share/age/keys.txt";
+      SOPS_AGE_KEY = "AGE-PLUGIN-FIDO2-RK-1PE25CT";
       WINE_FULLSCREEN_FSR = "1";
     };
     pointerCursor = {
@@ -63,7 +65,6 @@ in {
     '';
     packages = with pkgs; [
       awww
-      claude-monitor
       font.mono.package
       font.serif.package
       libreoffice
@@ -77,9 +78,6 @@ in {
       xdg-desktop-portal-termfilechooser
     ] ++ zsh.packages ++ utils;
   };
-  nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
-    "claude-code"
-  ];
   news.display = "silent";
   fonts.fontconfig = {
     enable = true;
@@ -90,7 +88,6 @@ in {
     };
   };
   programs = {
-    home-manager.enable = true;
     bat.enable = true;
     bottom.enable = true;
     ccvm = {
@@ -100,117 +97,6 @@ in {
       vmDiskSize = 32;
       nix.enable = true;
       extraPackages = utils;
-    };
-    claude-code = {
-      enable = true;
-      settings = {
-        model = "opus";
-        effortLevel = "xhigh";
-        theme = "auto";
-        attribution = {
-          commit = "Co-authored-by: Claude <noreply@anthropic.com>";
-          pr = "";
-        };
-        permissions = {
-          defaultMode = "plan";
-          allow = [
-            "Read"
-            "Bash(git log:*)"
-            "Bash(git status:*)"
-            "Bash(git diff:*)"
-            "Bash(git show:*)"
-            "Bash(git branch:*)"
-            "Bash(ls:*)"
-            "Bash(eza:*)"
-            "Bash(grep:*)"
-            "Bash(rg:*)"
-            "Bash(cat:*)"
-            "Bash(bat:*)"
-            "Bash(echo:*)"
-            "Bash(pwd:*)"
-            "Bash(which:*)"
-            "Bash(wc:*)"
-            "Bash(head:*)"
-            "Bash(tail:*)"
-            "Bash(jq:*)"
-            "Bash(nix flake show:*)"
-            "Bash(nix flake check:*)"
-            "Bash(nix eval:*)"
-          ];
-        };
-      };
-      lspServers = {
-        nixd = {
-          command = "nixd";
-          extensionToLanguage.".nix" = "nix";
-        };
-        typescript = {
-          command = "typescript-language-server";
-          args = [ "--stdio" ];
-          extensionToLanguage = {
-            ".ts" = "typescript";
-            ".tsx" = "typescriptreact";
-            ".js" = "javascript";
-            ".jsx" = "javascriptreact";
-          };
-        };
-        html = {
-          command = "vscode-html-language-server";
-          args = [ "--stdio" ];
-          extensionToLanguage = {
-            ".html" = "html";
-            ".htm" = "html";
-          };
-        };
-        css = {
-          command = "vscode-css-language-server";
-          args = [ "--stdio" ];
-          extensionToLanguage = {
-            ".css" = "css";
-            ".scss" = "scss";
-            ".less" = "less";
-          };
-        };
-        rust = {
-          command = "rust-analyzer";
-          extensionToLanguage.".rs" = "rust";
-        };
-        python = {
-          command = "pyright-langserver";
-          args = [ "--stdio" ];
-          extensionToLanguage.".py" = "python";
-        };
-        eslint = {
-          command = "vscode-eslint-language-server";
-          args = [ "--stdio" ];
-          extensionToLanguage = {
-            ".js" = "javascript";
-            ".jsx" = "javascriptreact";
-            ".ts" = "typescript";
-            ".tsx" = "typescriptreact";
-          };
-        };
-        markdown = {
-          command = "markdown-oxide";
-          extensionToLanguage.".md" = "markdown";
-        };
-        json = {
-          command = "vscode-json-language-server";
-          args = [ "--stdio" ];
-          extensionToLanguage = {
-            ".json" = "json";
-            ".jsonc" = "jsonc";
-          };
-        };
-        yaml = {
-          command = "yaml-language-server";
-          args = [ "--stdio" ];
-          extensionToLanguage = {
-            ".yaml" = "yaml";
-            ".yml" = "yaml";
-          };
-        };
-      };
     };
     delta = {
       enable = true;
@@ -234,7 +120,7 @@ in {
           email = "git@jaxxen.dev";
         };
         gpg.format = "ssh";
-        gpg.ssh.allowedSignersFile = "${config.home.homeDirectory}/.config/git/allowed_signers";
+        gpg.ssh.allowedSignersFile = "${home}/.config/git/allowed_signers";
         tag.gpgsign = true;
       };
       ignores = [
@@ -245,13 +131,13 @@ in {
         "**/.DS_Store"
       ];
       signing = {
-        key = "${config.home.homeDirectory}/.ssh/id_ed25519_sk";
+        key = "${home}/.ssh/id_ed25519_sk";
         signByDefault = true;
       };
     };
     hyprshot = {
       enable = true;
-      saveLocation = "${config.home.homeDirectory}/Pictures/Screenshots";
+      saveLocation = "${config.xdg.userDirs.pictures}/screenshots";
     };
     imv = {
       enable = true;
@@ -318,15 +204,6 @@ in {
       config = {
         prefetch-playlist = "yes";
         loop-playlist = "inf";
-      };
-    };
-    nh = {
-      enable = true;
-      flake = "${config.home.homeDirectory}/Projects/vessel";
-      clean = {
-        enable = true;
-        dates = "weekly";
-        extraArgs = "--keep 3";
       };
     };
     nixvim = {
@@ -411,10 +288,7 @@ in {
     ssh = {
       enable = true;
       enableDefaultConfig = false;
-      settings."*".IdentityFile = [
-        "${config.home.homeDirectory}/.ssh/id_ed25519_sk"
-        "${config.home.homeDirectory}/.ssh/id_ed25519_sk_backup"
-      ];
+      settings."*".IdentityFile = "${home}/.ssh/id_ed25519_sk";
     };
     wezterm = {
       enable = true;
@@ -433,6 +307,32 @@ in {
           bottom = 0;
         };
       };
+      extraConfig = ''
+        local wezterm = require 'wezterm'
+        local act = wezterm.action
+        local config = wezterm.config_builder()
+        config.mouse_bindings = {
+          -- Plain click: only finish a selection, never open links
+          {
+            event = { Up = { streak = 1, button = 'Left' } },
+            mods = 'NONE',
+            action = act.CompleteSelection 'ClipboardAndPrimarySelection',
+          },
+          -- Ctrl+click: open the link under the cursor
+          {
+            event = { Up = { streak = 1, button = 'Left' } },
+            mods = 'CTRL',
+            action = act.OpenLinkAtMouseCursor,
+          },
+          -- Swallow Ctrl+mouse-down so it doesn't leak to the running program
+          {
+            event = { Down = { streak = 1, button = 'Left' } },
+            mods = 'CTRL',
+            action = act.Nop,
+          },
+        }
+        return config
+      '';
     };
     yazi = {
       enable = true;
@@ -448,32 +348,32 @@ in {
       };
       keymap.mgr.prepend_keymap = [
         {
-          run = "cd ${config.home.homeDirectory}/Projects";
-          desc = "Go to ~/Projects";
+          run = "cd ${config.xdg.userDirs.projects}";
+          desc = "Go to ~/projects";
           on = [
             "g"
             "p"
           ];
         }
         {
-          run = "cd ${config.home.homeDirectory}/Pictures";
-          desc = "Go to ~/Pictures";
+          run = "cd ${config.xdg.userDirs.pictures}";
+          desc = "Go to ~/pictures";
           on = [
             "g"
             "P"
           ];
         }
         {
-          run = "cd ${config.home.homeDirectory}/Documents";
-          desc = "Go to ~/Documents";
+          run = "cd ${config.xdg.userDirs.documents}";
+          desc = "Go to ~/documents";
           on = [
             "g"
             "d"
           ];
         }
         {
-          run = "cd ${config.home.homeDirectory}/Downloads";
-          desc = "Go to ~/Downloads";
+          run = "cd ${config.xdg.userDirs.download}";
+          desc = "Go to ~/downloads";
           on = [
             "g"
             "D"
@@ -488,7 +388,7 @@ in {
           ];
         }
         {
-          run = ''shell --block -- umount "$0"'';
+          run = "shell --block -- umount %h";
           desc = "Unmount highlighted directory";
           on = [
             "u"
@@ -496,7 +396,7 @@ in {
           ];
         }
         {
-          run = ''shell -- ya emit cd "${config.home.homeDirectory}/Projects/vessel/$(hostname)"'';
+          run = ''shell -- ya emit cd "${config.xdg.userDirs.projects}/vessel/$(hostname)"'';
           desc = "Go to this system's config";
           on = [
             "g"
@@ -512,19 +412,11 @@ in {
           ];
         }
         {
-          run = "cd ${config.home.homeDirectory}/Projects/vessel/${config.home.username}";
+          run = "cd ${config.xdg.userDirs.projects}/vessel/${config.home.username}";
           desc = "Go to this user's home config";
           on = [
             "g"
             "u"
-          ];
-        }
-        {
-          run = "shell --block -- nh home switch ; echo '\nPress enter to exit\n' && read";
-          desc = "Update this user's home-manager";
-          on = [
-            "u"
-            "h"
           ];
         }
       ];
@@ -608,7 +500,6 @@ in {
       acceleration = "cuda";
       environmentVariables.OLLAMA_KEEP_ALIVE = "3m";
     };
-    ssh-agent.enable = true;
     udiskie.enable = true;
   };
   xdg = {
@@ -647,17 +538,12 @@ in {
         else
           set -- --chooser-file="$out" "$path"
         fi
-        fifo=$(mktemp -u /tmp/tfc-fifo.XXXXXX)
+        dir=$(mktemp -d)
+        fifo="$dir/fifo"
         mkfifo "$fifo"
-        inner="yazi"
-        for arg in "$@"; do
-          escaped=$(printf "%s" "$arg" | sed 's/"/\\"/g')
-          inner="$inner \"$escaped\""
-        done
-        inner="$inner; echo x > \"$fifo\""
-        ${pkgs.wezterm}/bin/wezterm start --always-new-process -- sh -c "$inner" &
+        ${pkgs.wezterm}/bin/wezterm start --always-new-process -- sh -c 'yazi "$@"; echo x > "$0"' "$fifo" "$@" &
         read _ < "$fifo"
-        rm -f "$fifo"
+        rm -r "$dir"
         if [ "$directory" = "1" ]; then
           if [ ! -s "$out" ] && [ -s "$out".1 ]; then
             cat "$out".1 > "$out"
@@ -670,11 +556,11 @@ in {
     in ''
       [filechooser]
       cmd = ${wrapper}
-      default_dir = ${config.home.homeDirectory}
+      default_dir = ${home}
       open_mode = suggested
       save_mode = suggested
       env = TERMCMD=${terminal.command}
-      env = PATH=$PATH:${config.home.homeDirectory}/.local/state/nix/profile/bin:/run/current-system/sw/bin
+      env = PATH=$PATH:${config.home.profileDirectory}/bin
     '';
     desktopEntries = {
       claude = {
@@ -740,6 +626,19 @@ in {
         "application/vnd.openxmlformats-officedocument.presentationml.presentation" = [ "libreoffice-impress.desktop" ];
         "application/vnd.oasis.opendocument.presentation" = [ "libreoffice-impress.desktop" ];
       };
+    };
+    userDirs = {
+      enable = true;
+      createDirectories = true;
+      desktop = "${home}/desktop";
+      documents = "${home}/documents";
+      download = "${home}/downloads";
+      music = "${home}/music";
+      pictures = "${home}/pictures";
+      projects = "${home}/projects";
+      publicShare = "${home}/public";
+      templates = "${home}/templates";
+      videos = "${home}/videos";
     };
   };
   wayland.windowManager.hyprland = {
@@ -874,7 +773,7 @@ in {
           function()
             hl.exec_cmd("awww-daemon")
             hl.exec_cmd("awww clear 000000")
-            hl.exec_cmd("mv ${config.home.homeDirectory}/ly-session.log ${config.home.homeDirectory}/.ly-session.log")
+            hl.exec_cmd("mv ${home}/ly-session.log ${home}/.ly-session.log")
           end'')
       ];
       bind = [
@@ -893,7 +792,7 @@ in {
         (kb "${mod} + T" (exec "${terminal.command} zsh -c 'nix run nixpkgs#tor-browser'"))
         (kb "${mod} + R" (exec "killall rofi || rofi -show drun"))
         (kb "${mod} + A" (exec "killall wiremix || ${terminal.command} wiremix"))
-        (kb "${mod} + equal" (exec ''cfg=${config.home.homeDirectory}/.config/qalculate/qalc.cfg; caut=calculate_as_you_type; grep -q $caut $cfg 2>/dev/null || echo "$caut=1" >> $cfg; sed -i "s/.*$caut.*/$caut=1/" $cfg; ${terminal.command} qalc''))
+        (kb "${mod} + equal" (exec ''cfg=${home}/.config/qalculate/qalc.cfg; caut=calculate_as_you_type; grep -q $caut $cfg 2>/dev/null || echo "$caut=1" >> $cfg; sed -i "s/.*$caut.*/$caut=1/" $cfg; ${terminal.command} qalc''))
         (kb "${mod} + D" (exec "dunstctl close"))
         (kb "${mod} + SHIFT + D" (exec "dunstctl close-all"))
         (kb "${mod} + minus" (exec "wl-copy -- —")) # em-dash

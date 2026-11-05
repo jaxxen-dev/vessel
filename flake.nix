@@ -1,7 +1,39 @@
+/* SPDX-License-Identifier: MIT
+ * Copyright (C) 2026 Jaxxen
+ */
+
 {
-  description = "Workstations, home-manager environments, and devShells of Jaxxen";
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    disko = {
+      url = "github:nix-community/disko";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    lanzaboote = {
+      url = "github:nix-community/lanzaboote/v1.2.0";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    impermanence = {
+      url = "github:nix-community/impermanence";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    sops-nix = {
+      url = "github:mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    home-manager = {
+      url = "github:nix-community/home-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    age-plugin-fido2-rk = {
+      url = "gitlab:nixipi/age-plugin-fido2-rk";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    nixvim.url = "github:nix-community/nixvim";
+    claude-code = {
+      url = "github:ryoppippi/nix-claude-code";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     ccvm = {
       url = "github:openccvm/ccvm";
       inputs = {
@@ -9,55 +41,33 @@
         claude-code.follows = "claude-code";
       };
     };
-    claude-code = {
-      url = "github:ryoppippi/nix-claude-code";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    disko = {
-      url = "github:nix-community/disko";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    home-manager = {
-      url = "github:nix-community/home-manager";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    impermanence = {
-      url = "github:nix-community/impermanence";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    lanzaboote = {
-      url = "github:nix-community/lanzaboote/v1.1.0";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    nixvim.url = "github:nix-community/nixvim";
-    rehomify.url = "github:Ryokune/rehomify";
     rycee-addons = {
       url = "gitlab:rycee/nur-expressions?dir=pkgs/firefox-addons";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    sops-nix = {
-      url = "github:mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
   outputs = inputs @ {
     nixpkgs,
-    ccvm,
-    claude-code,
     disko,
-    home-manager,
-    impermanence,
     lanzaboote,
-    nixvim,
-    rehomify,
+    impermanence,
     sops-nix,
+    home-manager,
+    age-plugin-fido2-rk,
+    nixvim,
+    claude-code,
+    ccvm,
     ...
   }:
   let
     system = "x86_64-linux";
+    overlays = [
+      (_: _: { claude-code = claude-code.packages.${system}.default; })
+      age-plugin-fido2-rk.overlays.default
+    ];
     pkgs = import nixpkgs {
-      inherit system;
-      overlays = [ claude-code.overlays.default ];
+      inherit system overlays;
+      config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [ "claude" ];
     };
     inherit (nixpkgs) lib;
   in {
@@ -65,25 +75,28 @@
       inherit system;
       modules = [
         disko.nixosModules.disko
-        impermanence.nixosModules.impermanence
         lanzaboote.nixosModules.lanzaboote
-        rehomify.nixosModules.rehomify
+        impermanence.nixosModules.impermanence
         sops-nix.nixosModules.sops
-        ./iridium/configuration.nix
+        home-manager.nixosModules.home-manager
         ./iridium/disks.nix
         ./iridium/hardware-configuration.nix
+        ./iridium/configuration.nix
+        {
+          nixpkgs.overlays = overlays;
+          home-manager = {
+            useGlobalPkgs = true;
+            useUserPackages = true;
+            backupFileExtension = "hm-bak";
+            extraSpecialArgs.addons = inputs.rycee-addons.packages.${system};
+            sharedModules = [
+              ccvm.homeModules.ccvm
+              nixvim.homeModules.nixvim
+            ];
+            users.jaxxen = import ./jaxxen/home.nix;
+          };
+        }
       ];
-    };
-    homeConfigurations = {
-      jaxxen = home-manager.lib.homeManagerConfiguration {
-        inherit pkgs;
-        extraSpecialArgs.addons = inputs.rycee-addons.packages.${system};
-        modules = [
-          ccvm.homeModules.ccvm
-          nixvim.homeModules.nixvim
-          ./jaxxen/home.nix
-        ];
-      };
     };
     devShells.${system}.default = import ./shell.nix {
       inherit pkgs;
@@ -93,6 +106,5 @@
         };
       };
     };
-    formatter.${system} = pkgs.nixfmt;
   };
 }

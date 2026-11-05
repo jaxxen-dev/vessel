@@ -1,5 +1,5 @@
-secrets/**/*.yaml.dec
-*.swp
+# SPDX-License-Identifier: MIT
+# Copyright (C) 2026 Jaxxen
+
 result
-.direnv
-**/.DS_Store
+*.dec

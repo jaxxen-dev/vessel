@@ -1,3 +1,7 @@
+/* SPDX-License-Identifier: MIT
+ * Copyright (C) 2026 Jaxxen
+ */
+
 {
   pkgs,
   ...
@@ -165,6 +169,7 @@ let
     }
     ${lofiFunc}
     ${oceanFunc}
+    export EDITOR=nvim
   '';
 in {
   inherit instantPrompt pluginsAndConfig;

@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: MIT
+# Copyright (C) 2026 Jaxxen
+
 name: flake check
 on:
   push:
@@ -18,16 +21,13 @@ jobs:
         run: |
           nix run nixpkgs#statix -- check .
           nix run nixpkgs#deadnix -- --fail --exclude iridium/hardware-configuration.nix .
+      - name: flake-checker
+        run: nix run --inputs-from . nixpkgs#flake-checker -- --no-telemetry --fail-mode
       - name: nix flake check
         run: nix flake check --show-trace --keep-going
       - name: build iridium toplevel (dry-run)
         run: |
           nix build .#nixosConfigurations.iridium.config.system.build.toplevel \
-            --dry-run \
-            --show-trace
-      - name: build jaxxen's home-manager (dry-run)
-        run: |
-          nix build .#homeConfigurations.jaxxen.activationPackage \
             --dry-run \
             --show-trace
       - name: build devshell (dry-run)

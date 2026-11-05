@@ -1,0 +1,16 @@
+# SPDX-License-Identifier: MIT
+# Copyright (C) 2026 Jaxxen
+
+version = 1
+
+[[annotations]]
+path = [
+  "LICENSE",
+  "flake.lock",
+  "iridium/hardware-configuration.nix",
+  "jaxxen/age/*.txt",
+  "jaxxen/id_ed25519_sk.pub",
+  "secrets/*.yaml",
+]
+SPDX-FileCopyrightText = "2026 Jaxxen"
+SPDX-License-Identifier = "MIT"

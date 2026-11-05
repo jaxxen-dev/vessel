@@ -1,13 +1,18 @@
+/* SPDX-License-Identifier: MIT
+ * Copyright (C) 2026 Jaxxen
+ */
+
 {
   pkgs,
   ...
 }:
 with pkgs; [
   age
-  age-plugin-fido2-hmac
+  age-plugin-fido2-rk
   amass
   bat
   bottom
+  claude-code
   curl
   deadnix
   delta

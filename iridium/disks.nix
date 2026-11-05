@@ -1,3 +1,7 @@
+/* SPDX-License-Identifier: MIT
+ * Copyright (C) 2026 Jaxxen
+ */
+
 {
   disko.devices = {
     disk.main = {
@@ -15,8 +19,18 @@
               mountpoint = "/boot";
               mountOptions = [
                 "umask=0077"
-                "noatime"
+                "nosuid"
+                "nodev"
+                "noexec"
               ];
+            };
+          };
+          swap = {
+            size = "8G";
+            content = {
+              type = "swap";
+              randomEncryption = true;
+              discardPolicy = "both";
             };
           };
           luks = {
@@ -49,7 +63,7 @@
                 ];
                 subvolumes = let
                   mountOptions = [
-                    "noatime"
+                    # "noatime"
                     "compress=zstd:1"
                     "space_cache=v2"
                     "discard=async"
@@ -65,22 +79,24 @@
                   };
                   "@home" = {
                     mountpoint = "/home";
-                    inherit mountOptions;
+                    mountOptions = mountOptions ++ [
+                      "nosuid"
+                      "nodev"
+                    ];
                   };
                   "@var" = {
                     mountpoint = "/var";
-                    inherit mountOptions;
-                  };
-                  "@swap" = {
-                    mountpoint = "/swap";
-                    mountOptions = [
-                      "noatime"
-                      "nodatacow"
+                    mountOptions = mountOptions ++ [
+                      "nosuid"
+                      "nodev"
                     ];
                   };
                   "@persist" = {
                     mountpoint = "/persist";
-                    inherit mountOptions;
+                    mountOptions = mountOptions ++ [
+                      "nosuid"
+                      "nodev"
+                    ];
                   };
                   "@blank" = {};
                   "@home-blank" = {};

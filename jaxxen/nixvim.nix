@@ -1,3 +1,7 @@
+/* SPDX-License-Identifier: MIT
+ * Copyright (C) 2026 Jaxxen
+ */
+
 _:
 {
   colorschemes.catppuccin = {
@@ -8,6 +12,7 @@ _:
     };
   };
   opts = {
+    mouse = "a";
     comments = "sO:*\\ -,mO:*\\ \\ ,exO:*/,s1:/*,mb:*,ex:*/,://,b:#,:%,:XCOMM,n:>,fb:-";
     cursorline = true;
     expandtab = true;
@@ -20,15 +25,46 @@ _:
     softtabstop = 2;
     tabstop = 2;
   };
-  keymaps = [{
-    action = ":%y+<CR>";
-    mode = "n";
-    key = "<A-c>";
-    options = {
-      desc = "Copy entire buffer to system clipboard";
-      silent = true;
-    };
-  }];
+  keymaps = [
+    {
+      mode = [ "n" "x" ];
+      key = "<C-LeftMouse>";
+      action = "<LeftMouse>gx";
+      options = {
+        remap = true; # gx is itself a mapping in nvim 0.10+
+        desc = "Open link under mouse";
+      };
+    }
+    # Insert: <C-o> runs a single normal-mode command, then you stay in insert mode
+    {
+      mode = "i";
+      key = "<C-LeftMouse>";
+      action = "<LeftMouse><C-o>gx";
+      options = {
+        remap = true;
+        desc = "Open link under mouse";
+      };
+    }
+    # Terminal buffers: leave terminal mode first
+    {
+      mode = "t";
+      key = "<C-LeftMouse>";
+      action = "<C-\\><C-n><LeftMouse>gx";
+      options = {
+        remap = true;
+        desc = "Open link under mouse";
+      };
+    }
+    {
+      action = ":%y+<CR>";
+      mode = "n";
+      key = "<A-c>";
+      options = {
+        desc = "Copy entire buffer to system clipboard";
+        silent = true;
+      };
+    }
+  ];
   plugins = {
     cmp = {
       enable = true;
