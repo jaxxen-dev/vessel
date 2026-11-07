@@ -61,6 +61,14 @@
                   "nixos"
                   "-f"
                 ];
+                postCreateHook = ''
+                  (
+                    MNTPOINT=$(mktemp -d)
+                    mount "$device" "$MNTPOINT" -o subvol=/
+                    trap 'umount "$MNTPOINT"; rm -rf "$MNTPOINT"' EXIT
+                    btrfs property set "$MNTPOINT/@blank" ro true
+                  )
+                '';
                 subvolumes = let
                   mountOptions = [
                     # "noatime"
@@ -99,7 +107,6 @@
                     ];
                   };
                   "@blank" = {};
-                  "@home-blank" = {};
                 };
               };
             };

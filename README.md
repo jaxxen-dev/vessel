@@ -37,12 +37,6 @@ Then, remove the passphrase:
 sudo systemd-cryptenroll --wipe-slot=password /dev/disk/by-partlabel/disk-main-luks
 ```
 
-Last, for measured boot, after Secure Boot is set up:
-
-```bash
-sudo systemd-cryptenroll --unlock-fido2-device=auto --tpm2-device=auto --tpm2-with-pin=yes --tpm2-pcrlock=/var/lib/systemd/pcrlock.json /dev/disk/by-partlabel/disk-main-luks
-```
-
 ---
 
 ## FIDO2 Credential Creation

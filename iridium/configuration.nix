@@ -82,15 +82,6 @@
         enable = true;
         autoReboot = true;
       };
-      measuredBoot = {
-        enable = true;
-        pcrs = [
-          0
-          2
-          4
-          7
-        ];
-      };
     };
     loader = {
       systemd-boot.editor = false;
@@ -108,7 +99,7 @@
         "nvidia_uvm"
       ];
       systemd = {
-        tpm2.enable = true;
+        tpm2.enable = false;
         services.rollback = {
           description = "Rollback @ subvolume";
           wantedBy = [ "initrd.target" ];
@@ -120,10 +111,12 @@
           script = ''
             mkdir -p /mnt
             mount -t btrfs /dev/mapper/cryptroot /mnt
-            btrfs subvolume delete /mnt/@
+            btrfs subvolume delete -R /mnt/@
             btrfs subvolume snapshot /mnt/@blank /mnt/@
-            btrfs subvolume delete /mnt/@home
-            btrfs subvolume snapshot /mnt/@home-blank /mnt/@home
+            btrfs subvolume delete -R /mnt/@home
+            btrfs subvolume snapshot /mnt/@blank /mnt/@home
+            btrfs subvolume delete -R /mnt/@var
+            btrfs subvolume snapshot /mnt/@blank /mnt/@var
             umount /mnt
           '';
         };
@@ -149,7 +142,10 @@
       mode = "0440";
     };
   };
-  systemd.coredump.settings.Coredump.Storage = "none";
+  systemd = {
+    coredump.settings.Coredump.Storage = "none";
+    tpm2.enable = false;
+  };
   networking = {
     firewall.enable = true;
     hostName = "iridium";
