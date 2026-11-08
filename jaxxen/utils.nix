@@ -9,6 +9,7 @@
 with pkgs; [
   age
   age-plugin-fido2-rk
+  awscli2
   amass
   bat
   bottom
