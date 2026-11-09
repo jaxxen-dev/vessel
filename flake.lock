@@ -54,11 +54,11 @@
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
-        "lastModified": 1793822694,
-        "narHash": "sha256-t0EsncsaAU3yaLuDm+EpZcQEnIgttob3RL0cp29UhnY=",
+        "lastModified": 1794248146,
+        "narHash": "sha256-KMB6n3nLukWFiZAL0HqhzUALR1tjSD03CxRCULs2aE4=",
         "owner": "openccvm",
         "repo": "ccvm",
-        "rev": "5470628b0864f6662e5e799b5019ab91778fafce",
+        "rev": "032fe886d3a4ef001ab211586c8527d0a605356c",
         "type": "github"
       },
       "original": {
