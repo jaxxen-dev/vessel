@@ -18,6 +18,7 @@ with pkgs; [
   deadnix
   delta
   dig
+  efibootmgr
   eza
   fd
   ffuf
