@@ -92,9 +92,9 @@ in {
     bottom.enable = true;
     ccvm = {
       enable = true;
-      cores = 8;
-      memory = 8192;
-      vmDiskSize = 32;
+      cores = 10;
+      memory = 24576;
+      vmDiskSize = 256;
       nix.enable = true;
       extraPackages = utils;
     };
