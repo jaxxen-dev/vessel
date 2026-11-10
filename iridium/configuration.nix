@@ -207,6 +207,7 @@
     displayManager.ly.enable = true;
     fstrim.enable = true;
     fwupd.enable = true;
+    mullvad-vpn.enable = true;
     pipewire.enable = true;
     resolved = {
       enable = true;

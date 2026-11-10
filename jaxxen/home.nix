@@ -68,6 +68,7 @@ in {
       font.mono.package
       font.serif.package
       libreoffice
+      mullvad-browser
       playerctl
       quickemu
       trash-cli
