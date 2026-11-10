@@ -17,6 +17,7 @@ with pkgs; [
   curl
   deadnix
   delta
+  diceware
   dig
   efibootmgr
   eza
@@ -26,7 +27,6 @@ with pkgs; [
   git
   glab
   jq
-  keepassxc
   killall
   libfido2
   libqalculate
