@@ -64,7 +64,6 @@ in {
       }
     '';
     packages = with pkgs; [
-      awww
       font.mono.package
       font.serif.package
       libreoffice
@@ -435,6 +434,10 @@ in {
     };
   };
   services = {
+    awww = {
+      enable = true;
+      extraArgs = [ "--no-cache" ];
+    };
     darkman = {
       enable = true;
       settings = {
@@ -502,6 +505,10 @@ in {
       environmentVariables.OLLAMA_KEEP_ALIVE = "3m";
     };
     udiskie.enable = true;
+  };
+  systemd.user.services.awww.Service = {
+    Type = "notify";
+    ExecStartPost = "${pkgs.awww}/bin/awww clear 000000";
   };
   xdg = {
     portal = {
@@ -772,8 +779,6 @@ in {
         "hyprland.start"
         (mkLua ''
           function()
-            hl.exec_cmd("awww-daemon")
-            hl.exec_cmd("awww clear 000000")
             hl.exec_cmd("mv ${home}/ly-session.log ${home}/.ly-session.log")
           end'')
       ];
