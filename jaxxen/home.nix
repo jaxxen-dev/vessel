@@ -189,8 +189,6 @@ in {
           ublock-origin
           keepassxc-browser
           violentmonkey
-          df-youtube
-          theater-mode-for-youtube
         ];
       };
       policies.ExtensionSettings = {
