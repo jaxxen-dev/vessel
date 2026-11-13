@@ -20,3 +20,10 @@ creation_rules:
         - *jaxxen2
         - *jaxxen3
         - *iridium
+  - path_regex: secrets/mullvad.yaml
+    key_groups:
+      - age:
+        - *jaxxen
+        - *jaxxen2
+        - *jaxxen3
+        - *iridium

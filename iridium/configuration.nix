@@ -141,17 +141,96 @@
       group = "jaxxen";
       mode = "0440";
     };
+    secrets.mullvad = {
+      sopsFile = ../secrets/mullvad.yaml;
+      key = "number";
+      owner = "root";
+      group = "root";
+      mode = "0400";
+    };
   };
   systemd = {
     coredump.settings.Coredump.Storage = "none";
     tpm2.enable = false;
+    services = {
+      mullvad-daemon = {
+        environment = {
+          MULLVAD_SETTINGS_DIR = "/var/lib/mullvad-vpn";
+          MULLVAD_MANAGEMENT_SOCKET_GROUP = "jaxxen";
+        };
+        serviceConfig = {
+          StateDirectory = "mullvad-vpn";
+          StateDirectoryMode = "0700";
+        };
+      };
+      mullvad-config = {
+        description = "Mullvad VPN settings";
+        wantedBy = [ "multi-user.target" ];
+        wants = [ "network-online.target" ];
+        requires = [ "mullvad-daemon.service" ];
+        after = [
+          "mullvad-daemon.service"
+          "network-online.target"
+        ];
+        path = [ config.services.mullvad-vpn.package ];
+        serviceConfig = {
+          Type = "oneshot";
+          RemainAfterExit = true;
+          CapabilityBoundingSet = "";
+          NoNewPrivileges = true;
+          RestrictAddressFamilies = "AF_UNIX";
+          PrivateNetwork = true;
+          PrivateTmp = true;
+          PrivateDevices = true;
+          DevicePolicy = "closed";
+          ProtectSystem = "strict";
+          ProtectHome = true;
+          ProtectProc = "invisible";
+          ProcSubset = "pid";
+          ProtectKernelTunables = true;
+          ProtectKernelModules = true;
+          ProtectKernelLogs = true;
+          ProtectControlGroups = true;
+          ProtectClock = true;
+          ProtectHostname = true;
+          LockPersonality = true;
+          MemoryDenyWriteExecute = true;
+          RestrictNamespaces = true;
+          RestrictRealtime = true;
+          RestrictSUIDSGID = true;
+          SystemCallArchitectures = "native";
+          SystemCallFilter = [
+            "@system-service"
+            "~@privileged"
+            "~@resources"
+          ];
+          UMask = "0077";
+        };
+        script = ''
+          until mullvad status &>/dev/null; do sleep 1; done
+          if mullvad account get 2>/dev/null | grep -qE '^(Not logged in|The current device has been revoked)'; then
+            mullvad account login <${config.sops.secrets.mullvad.path} >/dev/null
+          fi
+          mullvad auto-connect set off
+          mullvad relay set location us sjc
+          mullvad relay set ownership owned
+          mullvad tunnel set ipv6 on
+          mullvad tunnel set daita on
+          mullvad tunnel set quantum-resistant on
+          mullvad tunnel set rotation-interval 24
+          mullvad lan set allow
+          mullvad dns set default
+          mullvad beta-program set off
+        '';
+      };
+    };
   };
   networking = {
     firewall.enable = true;
     hostName = "iridium";
     networkmanager = {
       enable = true;
-      dns = "systemd-resolved";
+      dns = lib.mkForce "none";
     };
   };
   time.timeZone = "America/Chicago";
@@ -207,7 +286,10 @@
     displayManager.ly.enable = true;
     fstrim.enable = true;
     fwupd.enable = true;
-    mullvad-vpn.enable = true;
+    mullvad-vpn = {
+      enable = true;
+      enableExcludeWrapper = false;
+    };
     pipewire.enable = true;
     resolved = {
       enable = true;
@@ -220,7 +302,6 @@
         ];
         DNSOverTLS = "yes";
         DNSSEC = true;
-        Domains = [ "~." ];
         LLMNR = "no";
         MulticastDNS = "no";
       };
