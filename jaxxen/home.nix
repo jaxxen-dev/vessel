@@ -439,8 +439,8 @@ in {
     darkman = {
       enable = true;
       settings = {
-        lat = 43.07468984247235;
-        lng = -89.3841682686535;
+        lat = 43.07468984247235;  #─┬──Wisconsin Capitol
+        lng = -89.3841682686535;  #─┘
         usegeoclue = false;
       };
       darkModeScripts.gtk = ''${pkgs.dconf}/bin/dconf write /org/gnome/desktop/interface/color-scheme "'prefer-dark'"'';
